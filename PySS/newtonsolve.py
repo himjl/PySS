@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def newtonsolve(mu,  xold, sigoldsq, N, Nmax):
 
     '''
@@ -11,15 +12,16 @@ def newtonsolve(mu,  xold, sigoldsq, N, Nmax):
     recursions, then a special flag (timefail) - indicating the convergence
     failure - is returned along with the last posterior mode estimate.
 
-    :param mu:
-    :param xold:
-    :param sigoldsq:
-    :param N:
-    :param Nmax:
+    :param mu: float
+    :param xold: float
+    :param sigoldsq: float
+    :param N: float
+    :param Nmax: float
     :return:
     '''
 
     it = xold + sigoldsq * (N - Nmax * np.exp(mu) * np.exp(xold) / (1 + np.exp(mu) * np.exp(xold)))
+
     it = [it]
 
     g = []
@@ -33,7 +35,7 @@ def newtonsolve(mu,  xold, sigoldsq, N, Nmax):
         gprime_update = -Nmax*sigoldsq*np.exp(mu)*np.exp(it[i])/np.square(1+np.exp(mu)*np.exp(it[i])) - 1
         gprime.append(gprime_update)
 
-        it_update = it[i] - g[i]/gprime[i];
+        it_update = it[i] - g[i]/gprime[i]
         it.append(it_update)
 
         x = it[-1]

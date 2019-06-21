@@ -4,6 +4,7 @@ import newtonsolve
 reload(newtonsolve)
 from newtonsolve import newtonsolve
 
+
 def forwardfilter(I, sigE, xguess, sigsqguess, mu):
     '''
     forwardfilter is a helper function that implements the forward recursive
@@ -53,6 +54,7 @@ def forwardfilter(I, sigE, xguess, sigsqguess, mu):
 
         # Use Newton's Method to compute the nonlinear posterior mode estimate
         xhat_next, flagfail = newtonsolve(mu, xhatold[k-1], sigsqold[k-1], N[k-1-1], Nmax[k-1-1])
+
         xhat.append(xhat_next)
 
         # if Newton's Method fails, number_fail saves the time step

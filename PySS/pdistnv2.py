@@ -1,4 +1,4 @@
-import numpy as np 
+import numpy as np
 
 def pdistnv2(x, s, mu, background_prob):
 
@@ -16,7 +16,6 @@ def pdistnv2(x, s, mu, background_prob):
     :return:
     '''
 
-    samps = []
     num_samps = 10000
     p025 = np.zeros(x.shape)
     p975 = np.zeros(x.shape)
@@ -33,9 +32,9 @@ def pdistnv2(x, s, mu, background_prob):
 
         order_pr_samps = np.sort(pr_samps)
 
-        p025[ov - 1] = order_pr_samps[int(np.floor(0.025 * num_samps))]
-        p975[ov - 1] = order_pr_samps[int(np.ceil(0.975 * num_samps))]
-        pmid[ov - 1] = order_pr_samps[int(np.round(0.5 * num_samps))]
-        pcert[ov - 1] = np.mean(pr_samps > background_prob)
+        p025[0, ov - 1] = float(order_pr_samps[int(np.floor(0.025 * num_samps))])
+        p975[0, ov - 1] = float(order_pr_samps[int(np.ceil(0.975 * num_samps))])
+        pmid[0, ov - 1] = float(order_pr_samps[int(np.round(0.5 * num_samps))])
+        pcert[0, ov - 1] = np.mean(pr_samps > background_prob)
 
     return p025, p975, pmid, pmodnew, pcert

@@ -1,6 +1,6 @@
 # Adapted from code written by Anne Smith in 2003 from the Brown Lab at MIT
 import numpy as np
-
+from tqdm import tqdm
 
 import forwardfilter
 reload(forwardfilter)
@@ -19,6 +19,8 @@ reload(pdistnv2)
 from pdistnv2 import pdistnv2
 
 
+_disable = False # progressbar
+
 def fit_bernoulli(Responses, MaxResponse=1, BackgroundProb=0.5):
     '''
 
@@ -31,7 +33,8 @@ def fit_bernoulli(Responses, MaxResponse=1, BackgroundProb=0.5):
     SigE = 0.5  # default variance of learning state process is sqrt(0.5)
     UpdaterFlag = 0 # default fixed i.c.
 
-    I = np.stack([Responses, MaxResponse * np.ones((1, Responses.shape[1]))], axis=0)
+    Responses = _check_input(Responses)
+    I = np.concatenate([Responses, MaxResponse * np.ones(Responses.shape)], axis=0)
 
     SigsqGuess = np.square(SigE)
 
@@ -42,32 +45,35 @@ def fit_bernoulli(Responses, MaxResponse=1, BackgroundProb=0.5):
     CvgceCrit = 1e-5
 
     ''' Start '''
-    xguess = 0
+    xguess = 0.
     NumberSteps = 3000
 
     newsigsq = []
     xnew1save = []
-    for i in range(NumberSteps):
+    for i in tqdm(range(NumberSteps), disable = _disable):
         p, x, s, xold, sold = forwardfilter(I, SigE, xguess, SigsqGuess, mu)
 
         # Compute the backward (smoothing algorithm) estimates of the learning
         # state and its variance: x{k|K} and sigsq{k|K}
         xnew, signewsq, A = backwardfilter(x, xold, s, sold)
+        # xnew: (1, ntrials+1)
+        # signewsq: (1, ntrials+1)
+        # A: (1, ntrials)
 
         if UpdaterFlag == 1:
-            xnew[0] = 0.5 * xnew[1] # updates the initial value of the latent process
-            signewsq[0] = np.square(SigE)
+            xnew[0, 0] = 0.5 * xnew[0, 1] # updates the initial value of the latent process
+            signewsq[0, 0] = np.square(SigE)
         elif UpdaterFlag == 0:
-            xnew[0] = 0 # fixes initial value (no bias at all)
-            signewsq[0] = np.square(SigE)
+            xnew[0, 0] = 0 # fixes initial value (no bias at all)
+            signewsq[0, 0] = np.square(SigE)
         elif UpdaterFlag == 2:
-            xnew[0] = xnew[1] # x[0] = x[1] means no prior chance probability
-            signewsq[0] = signewsq[1]
+            xnew[0, 0] = xnew[0, 1] # x[0] = x[1] means no prior chance probability
+            signewsq[0, 0] = signewsq[0, 1]
 
         # Compute the EM estimate of the learning state process variance
         newsigsq.append(em_bino(I, xnew, signewsq, A, UpdaterFlag))
 
-        xnew1save.append(xnew[0])
+        xnew1save.append(xnew[0, 0])
 
         # Check for convergence
         if i > 0:
@@ -79,10 +85,11 @@ def fit_bernoulli(Responses, MaxResponse=1, BackgroundProb=0.5):
                 break
             elif (a1 < CvgceCrit) and (UpdaterFlag == 0):
                 print 'EM estimates of learning state process variance converged after %d steps'%(i+1)
+                break
 
         SigE = np.sqrt(newsigsq[i])
-        xguess = xnew[0]
-        SigsqGuess = signewsq[0]
+        xguess = xnew[0, 0]
+        SigsqGuess = signewsq[0, 0]
 
     if i == (NumberSteps-1):
         print 'Failed to converge after %d steps; convergence criterion was %f'%(i+1, CvgceCrit)
@@ -93,9 +100,9 @@ def fit_bernoulli(Responses, MaxResponse=1, BackgroundProb=0.5):
     p025, p975, pmid, _, pcert = pdistnv2(xnew, signewsq, mu, BackgroundProb);
 
     # Remove the prior
-    p025 = p025[1:]
-    p975 = p975[1:]
-    pmid = pmid[1:]
+    p025 = p025[0, 1:]
+    p975 = p975[0, 1:]
+    pmid = pmid[0, 1:]
 
     return pmid, p025, p975
 
@@ -103,7 +110,9 @@ def fit_bernoulli(Responses, MaxResponse=1, BackgroundProb=0.5):
 def _check_input(Responses):
     Responses = np.array(Responses)
 
-    assert len(Responses.shape) == 2
+    if len(Responses.shape) == 1:
+        Responses = Responses[None, :]
+
     if Responses.shape[0] != 1:
         Responses = np.transpose(Responses)
 
