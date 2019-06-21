@@ -21,17 +21,26 @@ from pdistnv2 import pdistnv2
 
 _disable = False # progressbar
 
-def fit_bernoulli(Responses, MaxResponse=1, BackgroundProb=0.5):
+def fit_bernoulli(Responses,
+                  chance_prior_type = 'fixed',
+                  ):
     '''
 
     :param Responses: sequence of 0s or 1s. dtype = list, np.array. shape = (1, N)
-    :param MaxResponse: ()
-    :param BackgroundProb: ()
+    :param chance_prior_type one of 'fixed', 'update', 'none', : dtype: str
     :return: pmid, p025, p075
     '''
 
+    if chance_prior_type not in ['fixed', 'none', 'update']:
+        raise ValueError('Specify chance_prior_type of "fixed", "update", or "none". Gave: %s'%(str(chance_prior_type)))
+
+    UpdaterFlagDict = {'fixed': 0, 'update': 1, 'none': 2, }  # todo: deprecate
+
+    MaxResponse = 1
+    BackgroundProb = 0.5
+    UpdaterFlag = UpdaterFlagDict[chance_prior_type]
+
     SigE = 0.5  # default variance of learning state process is sqrt(0.5)
-    UpdaterFlag = 0 # default fixed i.c.
 
     Responses = _check_input(Responses)
     I = np.concatenate([Responses, MaxResponse * np.ones(Responses.shape)], axis=0)
@@ -60,14 +69,18 @@ def fit_bernoulli(Responses, MaxResponse=1, BackgroundProb=0.5):
         # signewsq: (1, ntrials+1)
         # A: (1, ntrials)
 
-        if UpdaterFlag == 1:
-            xnew[0, 0] = 0.5 * xnew[0, 1] # updates the initial value of the latent process
+        if chance_prior_type == 'fixed':
+            # UpdaterFlag == 0
+            xnew[0, 0] = 0 # fixes initial value to 50%
             signewsq[0, 0] = np.square(SigE)
-        elif UpdaterFlag == 0:
-            xnew[0, 0] = 0 # fixes initial value (no bias at all)
+        elif chance_prior_type == 'update':
+            # Dampens the initial value toward chance
+            xnew[0, 0] = 0.5 * xnew[0, 1]  # updates the initial value of the latent process
             signewsq[0, 0] = np.square(SigE)
-        elif UpdaterFlag == 2:
-            xnew[0, 0] = xnew[0, 1] # x[0] = x[1] means no prior chance probability
+        elif chance_prior_type == 'none':
+            # UpdaterFlag == 2
+            # Unconstrained initial value
+            xnew[0, 0] = xnew[0, 1]  # x[0] = x[1] means no prior chance probability
             signewsq[0, 0] = signewsq[0, 1]
 
         # Compute the EM estimate of the learning state process variance
