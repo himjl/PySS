@@ -14,6 +14,7 @@ niter = 5
 ptrue = np.linspace(0, 1, ntrials)
 ptrue = (1 + np.cos(np.linspace(0, 2*np.pi, ntrials)))/2.
 x = np.random.rand(ntrials) < ptrue
+x = [1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,0,1,0,0,1,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,1,0,0,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,]
 
 
 for chance_prior_type in ['fixed', 'update', 'none']:

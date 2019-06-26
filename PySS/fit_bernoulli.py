@@ -19,14 +19,16 @@ reload(pdistnv2)
 from pdistnv2 import pdistnv2
 
 
-_disable = False # progressbar
 
 def fit_bernoulli(Responses,
+                  MaxResponse = 1,
                   chance_prior_type = 'fixed',
+                  disable = True
                   ):
     '''
 
     :param Responses: sequence of 0s or 1s. dtype = list, np.array. shape = (1, N)
+    :param MaxResponse: number of possible correct per trial. can be vector
     :param chance_prior_type one of 'fixed', 'update', 'none', : dtype: str
     :return: pmid, p025, p075
     '''
@@ -36,13 +38,13 @@ def fit_bernoulli(Responses,
 
     UpdaterFlagDict = {'fixed': 0, 'update': 1, 'none': 2, }  # todo: deprecate
 
-    MaxResponse = 1
+
     BackgroundProb = 0.5
     UpdaterFlag = UpdaterFlagDict[chance_prior_type]
 
     SigE = 0.5  # default variance of learning state process is sqrt(0.5)
 
-    Responses = _check_input(Responses)
+    Responses = _check_input(Responses, MaxResponse)
     I = np.concatenate([Responses, MaxResponse * np.ones(Responses.shape)], axis=0)
 
     SigsqGuess = np.square(SigE)
@@ -59,7 +61,7 @@ def fit_bernoulli(Responses,
 
     newsigsq = []
     xnew1save = []
-    for i in tqdm(range(NumberSteps), disable = _disable):
+    for i in tqdm(range(NumberSteps), disable = disable):
         p, x, s, xold, sold = forwardfilter(I, SigE, xguess, SigsqGuess, mu)
 
         # Compute the backward (smoothing algorithm) estimates of the learning
@@ -94,10 +96,12 @@ def fit_bernoulli(Responses,
             a2 = np.abs(xnew1save[i] - xnew1save[i-1])
 
             if (a1 < CvgceCrit) and (a2 < CvgceCrit) and (UpdaterFlag >= 1):
-                print 'EM estimates of learning state process variance and start point converged after %d steps'%(i+1)
+                if not disable:
+                    print 'EM estimates of learning state process variance and start point converged after %d steps'%(i+1)
                 break
             elif (a1 < CvgceCrit) and (UpdaterFlag == 0):
-                print 'EM estimates of learning state process variance converged after %d steps'%(i+1)
+                if not disable:
+                    print 'EM estimates of learning state process variance converged after %d steps'%(i+1)
                 break
 
         SigE = np.sqrt(newsigsq[i])
@@ -120,8 +124,18 @@ def fit_bernoulli(Responses,
     return pmid, p025, p975
 
 # Helper functions
-def _check_input(Responses):
+def _check_input(Responses, MaxResponse):
+
     Responses = np.array(Responses)
+    if isinstance(MaxResponse, (np.ndarray, list)):
+        MaxResponse = np.array(MaxResponse)
+        if (MaxResponse.shape) == 1:
+            MaxResponse = MaxResponse[None, :]
+        if MaxResponse.shape[0] !=1:
+            MaxResponse = np.transpose(MaxResponse)
+        assert MaxResponse.shape[0] == 1
+
+
 
     if len(Responses.shape) == 1:
         Responses = Responses[None, :]
@@ -130,4 +144,4 @@ def _check_input(Responses):
         Responses = np.transpose(Responses)
 
     assert Responses.shape[0] == 1
-    return Responses
+    return Responses, MaxResponse
