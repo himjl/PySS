@@ -1,3 +1,2 @@
 import fit_bernoulli
-reload(fit_bernoulli)
 from fit_bernoulli import fit_bernoulli

@@ -3,19 +3,15 @@ import numpy as np
 from tqdm import tqdm
 
 import forwardfilter
-reload(forwardfilter)
 from forwardfilter import forwardfilter
 
 import backwardfilter
-reload(backwardfilter)
 from backwardfilter import backwardfilter
 
 import em_bino
-reload(em_bino)
 from em_bino import em_bino
 
 import pdistnv2
-reload(pdistnv2)
 from pdistnv2 import pdistnv2
 
 
@@ -44,7 +40,7 @@ def fit_bernoulli(Responses,
 
     SigE = 0.5  # default variance of learning state process is sqrt(0.5)
 
-    Responses = _check_input(Responses, MaxResponse)
+    Responses, MaxResponse = _check_input(Responses, MaxResponse)
     I = np.concatenate([Responses, MaxResponse * np.ones(Responses.shape)], axis=0)
 
     SigsqGuess = np.square(SigE)
@@ -97,11 +93,11 @@ def fit_bernoulli(Responses,
 
             if (a1 < CvgceCrit) and (a2 < CvgceCrit) and (UpdaterFlag >= 1):
                 if not disable:
-                    print 'EM estimates of learning state process variance and start point converged after %d steps'%(i+1)
+                    print ('EM estimates of learning state process variance and start point converged after %d steps'%(i+1))
                 break
             elif (a1 < CvgceCrit) and (UpdaterFlag == 0):
                 if not disable:
-                    print 'EM estimates of learning state process variance converged after %d steps'%(i+1)
+                    print ('EM estimates of learning state process variance converged after %d steps'%(i+1))
                 break
 
         SigE = np.sqrt(newsigsq[i])
@@ -109,7 +105,7 @@ def fit_bernoulli(Responses,
         SigsqGuess = signewsq[0, 0]
 
     if i == (NumberSteps-1):
-        print 'Failed to converge after %d steps; convergence criterion was %f'%(i+1, CvgceCrit)
+        print( 'Failed to converge after %d steps; convergence criterion was %f'%(i+1, CvgceCrit))
 
     # Use sampling to convert from state to a probability
 

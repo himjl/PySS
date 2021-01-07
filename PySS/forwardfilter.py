@@ -1,7 +1,6 @@
 import numpy as np
 
 import newtonsolve
-reload(newtonsolve)
 from newtonsolve import newtonsolve
 
 
@@ -66,7 +65,7 @@ def forwardfilter(I, sigE, xguess, sigsqguess, mu):
         sigsq.append(np.true_divide(-1, denom))
 
     if len(number_fail) > 0:
-        print 'Newton convergence failed at times', number_fail
+        print ('Newton convergence failed at times', number_fail)
 
     # Compute the observation model probability estimate
     p = np.true_divide(np.exp(mu) * np.exp(xhat), 1 + np.exp(mu) * np.exp(xhat))
