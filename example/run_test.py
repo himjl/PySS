@@ -3,8 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import scipy.stats as ss
 
-import fit_bernoulli
-from fit_bernoulli import fit_bernoulli
+from PySS.fit_bernoulli import fit_bernoulli
 
 
 ntrials = 50

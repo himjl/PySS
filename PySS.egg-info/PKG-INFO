@@ -1,4 +1,4 @@
-Metadata-Version: 1.0
+Metadata-Version: 2.1
 Name: PySS
 Version: 0.1
 Summary: State-space model fits written in Python
@@ -6,5 +6,7 @@ Home-page: https://github.com/mlee3142/PySS
 Author: mil
 Author-email: none@none.com
 License: MIT
-Description: UNKNOWN
 Platform: UNKNOWN
+
+UNKNOWN
+

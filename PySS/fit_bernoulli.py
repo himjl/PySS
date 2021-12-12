@@ -1,22 +1,12 @@
 # Adapted from code written by Anne Smith in 2003 from the Brown Lab at MIT
 import numpy as np
 from tqdm import tqdm
+from PySS.src.forwardfilter import forwardfilter
+from PySS.src.backwardfilter import backwardfilter
+from PySS.src.em_bino import em_bino
+from PySS.src.pdistnv2 import pdistnv2
 
-import forwardfilter
-from forwardfilter import forwardfilter
-
-import backwardfilter
-from backwardfilter import backwardfilter
-
-import em_bino
-from em_bino import em_bino
-
-import pdistnv2
-from pdistnv2 import pdistnv2
-
-
-
-def fit_bernoulli(Responses,
+def fit(Responses,
                   MaxResponse = 1,
                   chance_prior_type = 'fixed',
                   disable = True
@@ -110,12 +100,17 @@ def fit_bernoulli(Responses,
     # Use sampling to convert from state to a probability
 
     # Can used smoothed or filtered estimates - here used smoothed
+
+    if chance_prior_type == 'fixed':
+        # UpdaterFlag == 0
+        xnew[0, 0] = 0  # fixes initial value to 50%
+
     p025, p975, pmid, _, pcert = pdistnv2(xnew, signewsq, mu, BackgroundProb);
 
     # Remove the prior
-    p025 = p025[0, 1:]
-    p975 = p975[0, 1:]
-    pmid = pmid[0, 1:]
+    p025 = p025[0, :-1]
+    p975 = p975[0, :-1]
+    pmid = pmid[0, :-1]
 
     return pmid, p025, p975
 

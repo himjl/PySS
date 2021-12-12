@@ -1,7 +1,5 @@
 import numpy as np
-
-import newtonsolve
-from newtonsolve import newtonsolve
+from PySS.src.newtonsolve import newtonsolve
 
 
 def forwardfilter(I, sigE, xguess, sigsqguess, mu):

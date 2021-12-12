@@ -1,4 +1,5 @@
 from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(name='PySS',
       version='0.01',
@@ -7,6 +8,6 @@ setup(name='PySS',
       author='mil',
       author_email='none@none.com',
       license='MIT',
-      packages=['PySS'],
+      packages=find_packages(),
       install_requires=[],
       zip_safe=False)
