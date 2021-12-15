@@ -1,36 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="PYTHON_MODULE" version="4">
   <component name="NewModuleRootManager">
-    <content url="file://$MODULE_DIR$/../FeatureZoo">
-      <sourceFolder url="file://$MODULE_DIR$/../FeatureZoo" isTestSource="false" />
-    </content>
-    <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$" isTestSource="false" />
-    </content>
-    <content url="file://$MODULE_DIR$/../behaviorio">
-      <sourceFolder url="file://$MODULE_DIR$/../behaviorio" isTestSource="false" />
-    </content>
-    <content url="file://$MODULE_DIR$/../learnerz">
-      <sourceFolder url="file://$MODULE_DIR$/../learnerz" isTestSource="false" />
-    </content>
-    <content url="file://$MODULE_DIR$/../mil_imagesets">
-      <sourceFolder url="file://$MODULE_DIR$/../mil_imagesets" isTestSource="false" />
-    </content>
-    <content url="file://$MODULE_DIR$/../mutator_mts_data">
-      <sourceFolder url="file://$MODULE_DIR$/../mutator_mts_data" isTestSource="false" />
-    </content>
-    <content url="file://$MODULE_DIR$/../mutator_sr_behavior">
-      <sourceFolder url="file://$MODULE_DIR$/../mutator_sr_behavior" isTestSource="false" />
-    </content>
-    <content url="file://$MODULE_DIR$/../ptap/ptap_writer">
-      <sourceFolder url="file://$MODULE_DIR$/../ptap/ptap_writer" isTestSource="false" />
-    </content>
-    <content url="file://$MODULE_DIR$/../some_learning_curves">
-      <sourceFolder url="file://$MODULE_DIR$/../some_learning_curves" isTestSource="false" />
-    </content>
-    <content url="file://$MODULE_DIR$/../utilz">
-      <sourceFolder url="file://$MODULE_DIR$/../utilz" isTestSource="false" />
-    </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
